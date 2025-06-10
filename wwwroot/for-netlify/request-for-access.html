@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявка на предоставление доступа</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Заявка на предоставление доступа</h1>
+        <form class="contact-form">
+            <div class="form-group">
+                <label for="name">Фамилия, собственное имя, отчество (если таковое имеется)</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="unit">Структурное подразделение</label>
+                <input type="text" id="unit" name="unit" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="position">Должность</label>
+                <input type="text" id="position" name="position" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date-of-employment">Дата трудоустройства</label>
+                <input type="date" id="date-of-employment" name="date-of-employment" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Мобильный телефон</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="birth-date">Дата рождения</label>
+                <input type="date" id="birth-date" name="birth-date" required>
+            </div>
+            
+            <div class="italic-text">
+                <p><em>Заполняется при заключении договора с подрядчиком:</em></p>
+            </div>
+
+            <div class="form-group">
+                <label for="contract-date">Дата заключения договора</label>
+                <input type="date" id="contract-date" name="contract-date">
+            </div>
+
+             <div class="form-group">
+                <label for="deadline">Сроки выполнения работы (оказания услуг)</label>
+                <input type="text" id="deadline" name="deadline">
+            </div>
+
+            <div class="form-group">
+                <label for="curator-name">Фамилия, собственное имя, отчество (если таковое имеется) ответственного лица, который курирует деятельность подрядчика</label>
+                <input type="text" id="curator-name" name="curator-name">
+            </div>
+
+            <div class="form-group">
+                <label for="curator-position">Должность ответственного лица, который курирует деятельность подрядчика</label>
+                <input type="text" id="curator-position" name="curator-position">
+            </div>
+
+            <div class="form-divider"></div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="removable-media" name="removable-media">
+                    <label for="removable-media">Разрешить подключение съемного носителя информации</label>
+                </div>
+                <div class="form-note">
+                    <label for="removable-media-note">Примечание</label>
+                    <input type="text" id="removable-media-note" name="removable-media-note">
+                </div>
+            </div>
+
+            <div class="italic-text">
+                <p><em>Разрешить удаленный доступ к следующим ресурсам:</em></p>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="sed-access" name="sed-access">
+                    <label for="sed-access">система электронного документооборота</label>
+                </div>
+                <div class="form-note">
+                    <label for="sed-access-note">Примечание</label>
+                    <input type="text" id="sed-access-note" name="sed-access-note">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="arm-mis-access" name="arm-mis-access">
+                    <label for="arm-mis-access">АРМ Медицинской информационной системы «МАПСОФТ»</label>
+                </div>
+                <div class="form-note">
+                    <label for="arm-mis-access-note">Примечание</label>
+                    <input type="text" id="arm-mis-access-note" name="arm-mis-access-note">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="arm-bookkeeper-access" name="arm-bookkeeper-access">
+                    <label for="arm-bookkeeper-access">АРМ бухгалтерский комплекс «МАПСФОТ»</label>
+                </div>
+                <div class="form-note">
+                    <label for="arm-bookkeeper-access-note">Примечание</label>
+                    <input type="text" id="arm-bookkeeper-access-note" name="arm-bookkeeper-access-note">
+                </div>
+            </div>
+            
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="arm-mis-pn-access" name="arm-mis-pn-access">
+                    <label for="arm-mis-pn-access">АРМ Медицинской информационной системы «МАПСОФТ» (база данных психоневрологического диспансера)</label>
+                </div>
+                <div class="form-note">
+                    <label for="arm-mis-pn-access-note">Примечание</label>
+                    <input type="text" id="arm-mis-pn-access-note" name="arm-mis-pn-access-note">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="email-access" name="email-access">
+                    <label for="email-access">электронный почтовый ящик</label>
+                </div>
+                <div class="form-note">
+                    <label for="email-access-note">Примечание</label>
+                    <input type="text" id="email-access-note" name="email-access-note">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="ria-access" name="ria-access">
+                    <label for="ria-access">РИАС «Кадры»</label>
+                </div>
+                <div class="form-note">
+                    <label for="ria-access-note">Примечание</label>
+                    <input type="text" id="ria-access-note" name="ria-access-note">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rtc-access" name="rtc-access">
+                    <label for="rtc-access">Республиканская телемедицинская система консультирования</label>
+                </div>
+                <div class="form-note">
+                    <label for="rtc-access-note">Примечание</label>
+                    <input type="text" id="rtc-access-note" name="rtc-access-note">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="hiv-access" name="hiv-access">
+                    <label for="hiv-access">Республиканский регистр пациентов с ВИЧ</label>
+                </div>
+                <div class="form-note">
+                    <label for="hiv-access-note">Примечание</label>
+                    <input type="text" id="hiv-access-note" name="hiv-access-note">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="eis-access" name="eis-access">
+                    <label for="eis-access">АИС «Эндопротезирование»</label>
+                </div>
+                <div class="form-note">
+                    <label for="eis-access-note">Примечание</label>
+                    <input type="text" id="eis-access-note" name="eis-access-note">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="access-control-system-access" name="access-control-system-access">
+                    <label for="access-control-system-access">Электронный  пропуск системы контроля доступа</label>
+                </div>
+                <div class="form-note">
+                    <label for="access-control-system-access-note">Примечание</label>
+                    <input type="text" id="access-control-system-access-note" name="access-control-system-access-note">
+                </div>
+            </div>
+            
+            <div class="form-divider"></div>
+
+            <div class="form-group">
+                <label for="additional-access">Дополнительно разрешить доступ к следующим информационным ресурсам и сервисам:</label>
+                <textarea type="text" id="additional-access" name="additional-access"></textarea>
+            </div>
+
+            <div class="form-divider"></div>
+
+            <div class="form-group">
+                <label for="additional-software">Прошу установить следующее дополнительное программное обеспечение, не входящее в состав типового рабочего места (типовой состав: Word, Excel, Adobe pdf reader, ABBYY FineReader):</label>
+                <textarea type="text" id="additional-software" name="additional-software"></textarea>
+            </div>
+
+            
+            <button type="submit" class="submit-btn">Отправить</button>
+        </form>
+    </div>
+</body>
+</html>
