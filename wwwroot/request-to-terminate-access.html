@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявка на прекращение доступа</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Заявка на прекращение доступа</h1>
+        <form id="terminateForm" class="contact-form">
+            // ... existing form fields ...
+
+            <button type="submit" class="submit-btn">Отправить</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('terminateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/api/terminate-access', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(result.message);
+                    this.reset();
+                } else {
+                    alert('Произошла ошибка при отправке формы');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отправке формы');
+            }
+        });
+    </script>
+</body>
+</html>
