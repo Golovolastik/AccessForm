@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h1>Заявка на предоставление доступа</h1>
-        <form id="accessForm" class="contact-form">
+        <form id="accessForm" class="contact-form" novalidate>
             <div class="form-group">
                 <label for="name">Фамилия, собственное имя, отчество (если таковое имеется)</label>
                 <input type="text" id="name" name="name" required>
@@ -214,25 +214,47 @@
         document.getElementById('accessForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
+            // Создаем объект для JSON
+            const formData = {};
+            
+            // Собираем данные из формы
+            const formElements = this.elements;
+            for (let element of formElements) {
+                if (element.name) {
+                    if (element.type === 'checkbox') {
+                        formData[element.name] = element.checked;
+                    } else if (element.type === 'date') {
+                        const dateValue = element.value;
+                        formData[element.name] = dateValue;
+                    } else {
+                        formData[element.name] = element.value;
+                    }
+                }
+            }
             
             try {
+                console.log('Отправляемые данные:', formData);
                 const response = await fetch('/api/access-request', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
                 });
                 
                 const result = await response.json();
                 
                 if (response.ok) {
-                    alert(result.message);
+                    alert(`Форма успешно отправлена. Номер заявки: ${result.requestId}`);
                     this.reset();
                 } else {
-                    alert('Произошла ошибка при отправке формы');
+                    console.error('Ошибка сервера:', result);
+                    alert(`Ошибка при отправке формы: ${result.detail || result.message || 'Неизвестная ошибка'}`);
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
-                alert('Произошла ошибка при отправке формы');
+                alert('Произошла ошибка при отправке формы. Проверьте консоль для деталей.');
             }
         });
     </script>
