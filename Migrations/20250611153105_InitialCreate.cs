@@ -35,6 +35,7 @@ namespace AccessForm.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FullName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Position = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    EmploymentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DocumentPath = table.Column<string>(type: "text", nullable: false),
                     RequestTypeId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)

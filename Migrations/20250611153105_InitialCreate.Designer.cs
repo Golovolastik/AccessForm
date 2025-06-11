@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AccessForm.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250611093109_AddEmploymentDate")]
-    partial class AddEmploymentDate
+    [Migration("20250611153105_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
