@@ -45,3 +45,6 @@ docker-compose.override.yml
 
 # macOS system files
 ._* 
+
+# GeneratedDocuments
+GeneratedDocuments/
