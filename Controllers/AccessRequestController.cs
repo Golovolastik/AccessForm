@@ -109,6 +109,18 @@ public class AccessRequestController : ControllerBase
             _dbContext.AccessRequests.Add(accessRequest);
             await _dbContext.SaveChangesAsync();
 
+            // Конвертируем документ в PDF
+            try
+            {
+                documentPath = await _wordDocumentService.ConvertToPdfAndUpdatePathAsync(documentPath, accessRequest.Id);
+                _logger.LogInformation("Документ сконвертирован в PDF: {DocumentPath}", documentPath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при конвертации документа в PDF");
+                // Не прерываем выполнение, так как документ уже создан
+            }
+
             return Ok(new { 
                 message = "Форма успешно отправлена",
                 requestId = accessRequest.Id 

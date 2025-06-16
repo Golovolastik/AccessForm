@@ -7,5 +7,6 @@ namespace AccessForm.Services
     {
         Task<string> CreateDocumentCopyAsync();
         Task<string> UpdateDocumentContentAsync(string documentPath, Dictionary<string, string> replacements);
+        Task<string> ConvertToPdfAndUpdatePathAsync(string wordDocumentPath, int accessRequestId);
     }
 } 

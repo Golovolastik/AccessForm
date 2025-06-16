@@ -7,17 +7,21 @@ using Microsoft.Extensions.Hosting;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.EntityFrameworkCore;
+using AccessForm.Models;
 
 namespace AccessForm.Services
 {
     public class WordDocumentService : IWordDocumentService
     {
         private readonly IWebHostEnvironment _environment;
+        private readonly ApplicationDbContext _dbContext;
         private const string TemplateFileName = "doc-template.docx";
 
-        public WordDocumentService(IWebHostEnvironment environment)
+        public WordDocumentService(IWebHostEnvironment environment, ApplicationDbContext dbContext)
         {
             _environment = environment;
+            _dbContext = dbContext;
         }
 
         public async Task<string> CreateDocumentCopyAsync()
@@ -45,27 +49,30 @@ namespace AccessForm.Services
         {
             using (var doc = WordprocessingDocument.Open(documentPath, true))
             {
-                var body = doc.MainDocumentPart.Document.Body;
+                var body = doc.MainDocumentPart?.Document.Body;
 
-                // Проходим по всем таблицам в документе
-                foreach (var table in body.Elements<Table>())
+                if (body != null)
                 {
-                    foreach (var row in table.Elements<TableRow>())
+                    // Проходим по всем таблицам в документе
+                    foreach (var table in body.Elements<Table>())
                     {
-                        foreach (var cell in row.Elements<TableCell>())
+                        foreach (var row in table.Elements<TableRow>())
                         {
-                            foreach (var paragraph in cell.Elements<Paragraph>())
+                            foreach (var cell in row.Elements<TableCell>())
                             {
-                                foreach (var run in paragraph.Elements<Run>())
+                                foreach (var paragraph in cell.Elements<Paragraph>())
                                 {
-                                    foreach (var text in run.Elements<Text>())
+                                    foreach (var run in paragraph.Elements<Run>())
                                     {
-                                        // Проверяем, содержит ли текст один из ключей замены
-                                        foreach (var replacement in replacements)
+                                        foreach (var text in run.Elements<Text>())
                                         {
-                                            if (text.Text.Contains(replacement.Key))
+                                            // Проверяем, содержит ли текст один из ключей замены
+                                            foreach (var replacement in replacements)
                                             {
-                                                text.Text = text.Text.Replace(replacement.Key, replacement.Value);
+                                                if (text.Text.Contains(replacement.Key))
+                                                {
+                                                    text.Text = text.Text.Replace(replacement.Key, replacement.Value);
+                                                }
                                             }
                                         }
                                     }
@@ -73,12 +80,73 @@ namespace AccessForm.Services
                             }
                         }
                     }
-                }
 
-                doc.MainDocumentPart.Document.Save();
+                    doc.MainDocumentPart.Document.Save();
+                }
             }
 
             return documentPath;
+        }
+
+        public async Task<string> ConvertToPdfAndUpdatePathAsync(string wordDocumentPath, int accessRequestId)
+        {
+            if (!File.Exists(wordDocumentPath))
+            {
+                throw new FileNotFoundException($"Word document not found at path: {wordDocumentPath}");
+            }
+
+            var outputDirectory = Path.Combine(_environment.ContentRootPath, "GeneratedDocuments");
+            var pdfFileName = Path.GetFileNameWithoutExtension(wordDocumentPath) + ".pdf";
+            var pdfPath = Path.Combine(outputDirectory, pdfFileName);
+
+            // Конвертируем документ в PDF используя LibreOffice
+            var startInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "libreoffice",
+                Arguments = $"--headless --convert-to pdf --outdir \"{outputDirectory}\" \"{wordDocumentPath}\"",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
+
+            using (var process = System.Diagnostics.Process.Start(startInfo))
+            {
+                if (process == null)
+                {
+                    throw new Exception("Failed to start LibreOffice process");
+                }
+
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode != 0)
+                {
+                    var error = await process.StandardError.ReadToEndAsync();
+                    throw new Exception($"LibreOffice conversion failed with exit code {process.ExitCode}. Error: {error}");
+                }
+            }
+
+            // Проверяем, что PDF файл был создан
+            if (!File.Exists(pdfPath))
+            {
+                throw new Exception("PDF file was not created after conversion");
+            }
+
+            // Обновляем путь к документу в базе данных
+            var accessRequest = await _dbContext.AccessRequests.FindAsync(accessRequestId);
+            if (accessRequest != null)
+            {
+                accessRequest.DocumentPath = pdfPath;
+                await _dbContext.SaveChangesAsync();
+            }
+
+            // Удаляем исходный Word документ
+            if (File.Exists(wordDocumentPath))
+            {
+                File.Delete(wordDocumentPath);
+            }
+
+            return pdfPath;
         }
     }
 } 
