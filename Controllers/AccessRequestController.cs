@@ -114,17 +114,19 @@ public class AccessRequestController : ControllerBase
             {
                 documentPath = await _wordDocumentService.ConvertToPdfAndUpdatePathAsync(documentPath, accessRequest.Id);
                 _logger.LogInformation("Документ сконвертирован в PDF: {DocumentPath}", documentPath);
+
+                // Читаем PDF файл
+                var pdfBytes = await System.IO.File.ReadAllBytesAsync(documentPath);
+                var fileName = Path.GetFileName(documentPath);
+
+                // Возвращаем PDF файл
+                return File(pdfBytes, "application/pdf", fileName);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при конвертации документа в PDF");
-                // Не прерываем выполнение, так как документ уже создан
+                return Problem($"Ошибка при конвертации документа в PDF: {ex.Message}");
             }
-
-            return Ok(new { 
-                message = "Форма успешно отправлена",
-                requestId = accessRequest.Id 
-            });
         }
         catch (Exception ex)
         {
