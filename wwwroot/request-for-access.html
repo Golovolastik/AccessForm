@@ -238,19 +238,95 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/pdf'
                     },
                     body: JSON.stringify(formData)
                 });
                 
-                const result = await response.json();
-                
                 if (response.ok) {
-                    alert(`Форма успешно отправлена. Номер заявки: ${result.requestId}`);
+                    // Создаем модальное окно для PDF
+                    const modal = document.createElement('div');
+                    modal.style.position = 'fixed';
+                    modal.style.top = '0';
+                    modal.style.left = '0';
+                    modal.style.width = '100%';
+                    modal.style.height = '100%';
+                    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    modal.style.display = 'flex';
+                    modal.style.justifyContent = 'center';
+                    modal.style.alignItems = 'center';
+                    modal.style.zIndex = '1000';
+
+                    const modalContent = document.createElement('div');
+                    modalContent.style.backgroundColor = 'white';
+                    modalContent.style.padding = '20px';
+                    modalContent.style.borderRadius = '5px';
+                    modalContent.style.width = '80%';
+                    modalContent.style.height = '80%';
+                    modalContent.style.display = 'flex';
+                    modalContent.style.flexDirection = 'column';
+
+                    const header = document.createElement('div');
+                    header.style.display = 'flex';
+                    header.style.justifyContent = 'space-between';
+                    header.style.marginBottom = '10px';
+
+                    const title = document.createElement('h2');
+                    title.textContent = 'Ваш документ готов';
+                    header.appendChild(title);
+
+                    const closeButton = document.createElement('button');
+                    closeButton.textContent = '✕';
+                    closeButton.style.border = 'none';
+                    closeButton.style.background = 'none';
+                    closeButton.style.fontSize = '20px';
+                    closeButton.style.cursor = 'pointer';
+                    closeButton.onclick = () => {
+                        document.body.removeChild(modal);
+                        window.location.href = '/';
+                    };
+                    header.appendChild(closeButton);
+
+                    const pdfContainer = document.createElement('iframe');
+                    pdfContainer.style.width = '100%';
+                    pdfContainer.style.height = '100%';
+                    pdfContainer.style.border = 'none';
+                    
+                    // Создаем Blob из ответа и создаем URL для него
+                    const pdfBlob = await response.blob();
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    pdfContainer.src = pdfUrl;
+
+                    const printButton = document.createElement('button');
+                    printButton.textContent = 'Распечатать';
+                    printButton.style.marginTop = '10px';
+                    printButton.style.padding = '10px 20px';
+                    printButton.style.backgroundColor = '#4CAF50';
+                    printButton.style.color = 'white';
+                    printButton.style.border = 'none';
+                    printButton.style.borderRadius = '5px';
+                    printButton.style.cursor = 'pointer';
+                    printButton.onclick = () => {
+                        pdfContainer.contentWindow.print();
+                    };
+
+                    modalContent.appendChild(header);
+                    modalContent.appendChild(pdfContainer);
+                    modalContent.appendChild(printButton);
+                    modal.appendChild(modalContent);
+                    document.body.appendChild(modal);
+
                     this.reset();
                 } else {
-                    console.error('Ошибка сервера:', result);
-                    alert(`Ошибка при отправке формы: ${result.detail || result.message || 'Неизвестная ошибка'}`);
+                    // Проверяем тип контента ответа
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        console.error('Ошибка сервера:', errorData);
+                        alert(`Ошибка при отправке формы: ${errorData.detail || errorData.message || 'Неизвестная ошибка'}`);
+                    } else {
+                        alert('Произошла ошибка при отправке формы');
+                    }
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
