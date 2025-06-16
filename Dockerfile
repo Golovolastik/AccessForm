@@ -17,4 +17,8 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+# Копируем файл шаблона
+COPY doc-template.docx .
+# Создаем директорию для сгенерированных документов
+RUN mkdir -p GeneratedDocuments
 ENTRYPOINT ["dotnet", "AccessForm.dll"] 

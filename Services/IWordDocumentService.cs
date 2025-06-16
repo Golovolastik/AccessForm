@@ -1,0 +1,11 @@
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+namespace AccessForm.Services
+{
+    public interface IWordDocumentService
+    {
+        Task<string> CreateDocumentCopyAsync();
+        Task<string> UpdateDocumentContentAsync(string documentPath, Dictionary<string, string> replacements);
+    }
+} 

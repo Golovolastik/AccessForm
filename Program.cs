@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using AccessForm.Models;
 using System.Text.Json;
+using AccessForm.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,9 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+// Добавляем сервис для работы с Word документами
+builder.Services.AddScoped<IWordDocumentService, WordDocumentService>();
 
 // Добавляем контекст базы данных
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
