@@ -26,30 +26,25 @@ COPY doc-template.docx .
 RUN mkdir -p /app/GeneratedDocuments && \
     chmod 777 /app/GeneratedDocuments
 
-# Установка LibreOffice и шрифтов Times New Roman
+# Установка LibreOffice Writer и шрифта Times New Roman
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
     echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections && \
     apt-get install -y --no-install-recommends \
     libreoffice-writer \
-    libreoffice-calc \
-    libreoffice-impress \
-    libreoffice-draw \
-    libreoffice-math \
     fontconfig \
     cabextract \
     wget && \
-    wget https://downloads.sourceforge.net/corefonts/comic32.exe && \
-    wget https://downloads.sourceforge.net/corefonts/arial32.exe && \
     wget https://downloads.sourceforge.net/corefonts/times32.exe && \
-    wget https://downloads.sourceforge.net/corefonts/trebuc32.exe && \
-    wget https://downloads.sourceforge.net/corefonts/verdan32.exe && \
-    wget https://downloads.sourceforge.net/corefonts/webdin32.exe && \
     mkdir -p /usr/share/fonts/truetype/msttcorefonts && \
-    for font in *.exe; do cabextract -d /usr/share/fonts/truetype/msttcorefonts "$font"; done && \
+    cabextract -d /usr/share/fonts/truetype/msttcorefonts times32.exe && \
     fc-cache -f -v && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -f *.exe
+
+# Устанавливаем правильные права на директорию с документами
+RUN chown -R root:root /app/GeneratedDocuments && \
+    chmod -R 777 /app/GeneratedDocuments
 
 ENTRYPOINT ["dotnet", "AccessForm.dll"] 

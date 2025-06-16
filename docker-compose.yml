@@ -14,6 +14,8 @@ services:
       - db
     networks:
       - app-network
+    volumes:
+      - generated_documents:/app/GeneratedDocuments
 
   db:
     image: postgres:16
@@ -33,4 +35,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data: 
+  postgres_data:
+  generated_documents: 
