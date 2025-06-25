@@ -29,4 +29,7 @@ public class AccessRequest
     public RequestType RequestType { get; set; } = null!;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [MaxLength(45)]
+    public string? IpAddress { get; set; } // IPv6 совместимость
 } 

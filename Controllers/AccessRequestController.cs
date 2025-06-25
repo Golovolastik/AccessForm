@@ -94,7 +94,8 @@ public class AccessRequestController : ControllerBase
                 EmploymentDate = DateTime.SpecifyKind(DateTime.Parse(formData.GetProperty("date-of-employment").GetString() ?? DateTime.UtcNow.ToString("yyyy-MM-dd")), DateTimeKind.Utc),
                 RequestTypeId = 1, // ID для "Заявка на предоставление доступа"
                 DocumentPath = documentPath,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty
             };
 
             _logger.LogInformation("Создана заявка: {AccessRequest}", JsonSerializer.Serialize(accessRequest));
