@@ -107,8 +107,8 @@ public class AccessRequestController : ControllerBase
                 return Problem("Тип запроса не найден в базе данных");
             }
 
-            _dbContext.AccessRequests.Add(accessRequest);
-            await _dbContext.SaveChangesAsync();
+            // _dbContext.AccessRequests.Add(accessRequest);
+            // await _dbContext.SaveChangesAsync();
 
             // Конвертируем документ в PDF
             try
@@ -134,5 +134,50 @@ public class AccessRequestController : ControllerBase
             _logger.LogError(ex, "Ошибка при создании заявки");
             return Problem($"Ошибка при создании заявки: {ex.Message}");
         }
+    }
+
+    [HttpPost("UploadWithForm")]
+    public async Task<IActionResult> UploadWithForm(
+        [FromForm] IFormFile file,
+        [FromForm] string fullName,
+        [FromForm] string position,
+        [FromForm] string employmentDate, // строкой, чтобы парсить вручную
+        [FromForm] int requestTypeId)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("Файл не выбран");
+        if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(position) || string.IsNullOrWhiteSpace(employmentDate))
+            return BadRequest("Не все обязательные поля заполнены");
+
+        DateTime employmentDateParsed;
+        if (!DateTime.TryParse(employmentDate, out employmentDateParsed))
+            return BadRequest("Некорректная дата трудоустройства");
+
+        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "UploadedDocuments");
+        if (!Directory.Exists(uploadsDir))
+            Directory.CreateDirectory(uploadsDir);
+
+        var fileName = $"scanned_{DateTime.UtcNow:yyyyMMddHHmmss}_{Path.GetFileName(file.FileName)}";
+        var filePath = Path.Combine(uploadsDir, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var accessRequest = new AccessRequest
+        {
+            FullName = fullName,
+            Position = position,
+            EmploymentDate = DateTime.SpecifyKind(employmentDateParsed, DateTimeKind.Utc),
+            DocumentPath = filePath,
+            RequestTypeId = requestTypeId,
+            CreatedAt = DateTime.UtcNow,
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty
+        };
+        _dbContext.AccessRequests.Add(accessRequest);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new { message = "Заявка успешно создана и файл загружен" });
     }
 } 
