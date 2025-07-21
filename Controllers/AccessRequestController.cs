@@ -43,7 +43,8 @@ public class AccessRequestController : ControllerBase
             }
 
             // Создаем копию документа
-            var documentPath = await _wordDocumentService.CreateDocumentCopyAsync();
+            string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "AccessRequestTemplate.docx");
+            var documentPath = await _wordDocumentService.CreateDocumentCopyAsync(templatePath);
             _logger.LogInformation("Создана копия документа: {DocumentPath}", documentPath);
 
             // Подготавливаем данные для замены в документе

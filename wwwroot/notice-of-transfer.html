@@ -3,42 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Уведомление о переводе</title>
+    <title>Извещение о переводе</title>
     <link rel="stylesheet" href="/css/site.css">
 </head>
 <body>
     <div class="container">
-        <h1>Уведомление о переводе</h1>
-        <form id="transferForm" class="contact-form">
-            // ... existing form fields ...
+        <h1>Извещение о переводе</h1>
+        <form id="accessForm" class="contact-form" novalidate>
+            <div class="form-group">
+                <label for="notice">Извещаем о предстоящем (переводе работника в другое структурное подразделение/назначении на новую должность/переводе на другую работу для замещения временно отсутствующего работника):</label>
+                <textarea type="text" id="notice" name="notice"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="name">Фамилия, собственное имя, отчество (если таковое имеется)</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="unit">Текущее структурное подразделение</label>
+                <input type="text" id="unit" name="unit" required>
+            </div>
 
+            <div class="form-group">
+                <label for="new-unit">Новое структурное подразделение</label>
+                <input type="text" id="new-unit" name="new-unit" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="position">Текущая должность</label>
+                <input type="text" id="position" name="position" required>
+            </div>
+
+            <div class="form-group">
+                <label for="new-position">Новая должность/ Замещаемая должность</label>
+                <input type="text" id="new-position" name="new-position" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date-of-employment">Дата наступления кадрового события</label>
+                <input type="date" id="date-of-employment" name="date-of-employment" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Телефон</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            
             <button type="submit" class="submit-btn">Отправить</button>
         </form>
     </div>
 
     <script>
-        document.getElementById('transferForm').addEventListener('submit', async function(e) {
+        let lastFormData = null;
+        document.getElementById('accessForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
+            // Если модальное окно уже открыто — не отправлять форму повторно
+            if (document.querySelector('.pdf-modal')) {
+                return;
+            }
+            
+            // Создаем объект для JSON
+            const formData = {};
+            
+            // Собираем данные из формы
+            const formElements = this.elements;
+            for (let element of formElements) {
+                if (element.name) {
+                    if (element.type === 'checkbox') {
+                        formData[element.name] = element.checked;
+                    } else if (element.type === 'date') {
+                        const dateValue = element.value;
+                        formData[element.name] = dateValue;
+                    } else {
+                        formData[element.name] = element.value;
+                    }
+                }
+            }
+            lastFormData = formData; // Сохраняем данные формы для дальнейшей отправки
             
             try {
-                const response = await fetch('/api/transfer-notice', {
+                console.log('Отправляемые данные:', formData);
+                const response = await fetch('/api/AccessRequest', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/pdf'
+                    },
+                    body: JSON.stringify(formData)
                 });
                 
-                const result = await response.json();
-                
                 if (response.ok) {
-                    alert(result.message);
+                    // Создаем модальное окно для PDF
+                    const modal = document.createElement('div');
+                    modal.className = 'pdf-modal';
+                    modal.style.position = 'fixed';
+                    modal.style.top = '0';
+                    modal.style.left = '0';
+                    modal.style.width = '100%';
+                    modal.style.height = '100%';
+                    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    modal.style.display = 'flex';
+                    modal.style.justifyContent = 'center';
+                    modal.style.alignItems = 'center';
+                    modal.style.zIndex = '1000';
+
+                    const modalContent = document.createElement('div');
+                    modalContent.style.backgroundColor = 'white';
+                    modalContent.style.padding = '20px';
+                    modalContent.style.borderRadius = '5px';
+                    modalContent.style.width = '80%';
+                    modalContent.style.height = '80%';
+                    modalContent.style.display = 'flex';
+                    modalContent.style.flexDirection = 'column';
+
+                    const header = document.createElement('div');
+                    header.style.display = 'flex';
+                    header.style.justifyContent = 'space-between';
+                    header.style.marginBottom = '10px';
+
+                    const title = document.createElement('h2');
+                    title.textContent = 'Ваш документ готов';
+                    header.appendChild(title);
+
+                    const closeButton = document.createElement('button');
+                    closeButton.textContent = '✕';
+                    closeButton.style.border = 'none';
+                    closeButton.style.background = 'none';
+                    closeButton.style.fontSize = '20px';
+                    closeButton.style.cursor = 'pointer';
+                    closeButton.onclick = () => {
+                        console.log('Модальное окно закрыто');
+                        document.body.removeChild(modal);
+                    };
+                    header.appendChild(closeButton);
+
+                    const pdfContainer = document.createElement('iframe');
+                    pdfContainer.style.width = '100%';
+                    pdfContainer.style.height = '100%';
+                    pdfContainer.style.border = 'none';
+                    
+                    // Создаем Blob из ответа и создаем URL для него
+                    const pdfBlob = await response.blob();
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    pdfContainer.src = pdfUrl;
+                    // Сохраняем ссылку на PDF в localStorage
+                    localStorage.setItem('lastPdfUrl', pdfUrl);
+
+                    const printButton = document.createElement('button');
+                    printButton.textContent = 'Распечатать';
+                    printButton.style.marginTop = '10px';
+                    printButton.style.padding = '10px 20px';
+                    printButton.style.backgroundColor = '#4CAF50';
+                    printButton.style.color = 'white';
+                    printButton.style.border = 'none';
+                    printButton.style.borderRadius = '5px';
+                    printButton.style.cursor = 'pointer';
+                    printButton.onclick = () => {
+                        pdfContainer.contentWindow.print();
+                    };
+
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.textContent = 'Загрузить скан';
+                    downloadBtn.style.display = 'inline-block';
+                    downloadBtn.style.margin = '20px 0 10px 0';
+                    downloadBtn.style.padding = '12px 24px';
+                    downloadBtn.style.backgroundColor = '#3498db';
+                    downloadBtn.style.color = 'white';
+                    downloadBtn.style.border = 'none';
+                    downloadBtn.style.borderRadius = '5px';
+                    downloadBtn.style.textDecoration = 'none';
+                    downloadBtn.style.fontSize = '16px';
+                    downloadBtn.style.cursor = 'pointer';
+
+                    // Создаём скрытый input для загрузки файла
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'application/pdf,image/*';
+                    fileInput.style.display = 'none';
+                    fileInput.onchange = async (e) => {
+                        const file = e.target.files[0];
+                        if (file && lastFormData) {
+                            const uploadFormData = new FormData();
+                            uploadFormData.append('file', file);
+                            // Добавляем нужные поля из lastFormData
+                            if (lastFormData['name']) uploadFormData.append('fullName', lastFormData['name']);
+                            if (lastFormData['position']) uploadFormData.append('position', lastFormData['position']);
+                            if (lastFormData['date-of-employment']) uploadFormData.append('employmentDate', lastFormData['date-of-employment']);
+                            uploadFormData.append('requestTypeId', '1'); // если всегда "Заявка на предоставление доступа"
+                            // Можно добавить и другие поля, если потребуется
+                            downloadBtn.disabled = true;
+                            downloadBtn.textContent = 'Загрузка...';
+                            try {
+                                const resp = await fetch('/api/AccessRequest/UploadWithForm', {
+                                    method: 'POST',
+                                    body: uploadFormData
+                                });
+                                if (resp.ok) {
+                                    downloadBtn.textContent = 'Успешно!';
+                                    downloadBtn.style.background = '#4CAF50';
+                                } else {
+                                    downloadBtn.textContent = 'Ошибка';
+                                    downloadBtn.style.background = 'red';
+                                }
+                            } catch (err) {
+                                downloadBtn.textContent = 'Ошибка';
+                                downloadBtn.style.background = 'red';
+                            }
+                            setTimeout(() => {
+                                downloadBtn.disabled = false;
+                                downloadBtn.textContent = 'Загрузить скан';
+                                downloadBtn.style.background = '#3498db';
+                            }, 2000);
+                        }
+                    };
+                    downloadBtn.onclick = () => {
+                        fileInput.click();
+                    };
+
+                    modalContent.appendChild(header);
+                    modalContent.appendChild(pdfContainer);
+                    modalContent.appendChild(printButton);
+                    modalContent.appendChild(downloadBtn);
+                    modalContent.appendChild(fileInput);
+                    modal.appendChild(modalContent);
+                    document.body.appendChild(modal);
+
                     this.reset();
                 } else {
-                    alert('Произошла ошибка при отправке формы');
+                    // Проверяем тип контента ответа
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        console.error('Ошибка сервера:', errorData);
+                        alert(`Ошибка при отправке формы: ${errorData.detail || errorData.message || 'Неизвестная ошибка'}`);
+                    } else {
+                        alert('Произошла ошибка при отправке формы');
+                    }
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
-                alert('Произошла ошибка при отправке формы');
+                alert('Произошла ошибка при отправке формы. Проверьте консоль для деталей.');
             }
         });
     </script>

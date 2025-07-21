@@ -1,13 +1,5 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.EntityFrameworkCore;
 using AccessForm.Models;
 
 namespace AccessForm.Services
@@ -16,7 +8,7 @@ namespace AccessForm.Services
     {
         private readonly IWebHostEnvironment _environment;
         private readonly ApplicationDbContext _dbContext;
-        private const string TemplateFileName = "doc-template.docx";
+        //private const string TemplateFileName = "doc-template.docx";
 
         public WordDocumentService(IWebHostEnvironment environment, ApplicationDbContext dbContext)
         {
@@ -24,12 +16,12 @@ namespace AccessForm.Services
             _dbContext = dbContext;
         }
 
-        public async Task<string> CreateDocumentCopyAsync()
+        public async Task<string> CreateDocumentCopyAsync(string templatePath)
         {
-            var templatePath = Path.Combine(_environment.ContentRootPath, TemplateFileName);
+            //var templatePath = Path.Combine(_environment.ContentRootPath, TemplateFileName);
             if (!File.Exists(templatePath))
             {
-                throw new FileNotFoundException($"Template file {TemplateFileName} not found");
+                throw new FileNotFoundException($"Template file not found at path: {templatePath}");
             }
 
             var outputDirectory = Path.Combine(_environment.ContentRootPath, "GeneratedDocuments");

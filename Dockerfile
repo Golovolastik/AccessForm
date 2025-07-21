@@ -21,7 +21,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 # Копируем файл шаблона
-COPY doc-template.docx .
+COPY Templates /app/Templates
 # Создаем директорию для сгенерированных документов
 RUN mkdir -p /app/GeneratedDocuments && \
     chmod 777 /app/GeneratedDocuments
