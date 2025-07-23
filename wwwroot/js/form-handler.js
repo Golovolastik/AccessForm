@@ -9,6 +9,10 @@ window.addEventListener('DOMContentLoaded', function() {
     let lastFormData = null;
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        // Отключаем кнопку отправки формы
+        const submitBtn = this.querySelector('.submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Подождите...';
 
         // Если модальное окно уже открыто — не отправлять форму повторно
         if (document.querySelector('.pdf-modal')) {
