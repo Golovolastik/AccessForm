@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h1>Извещение о переводе</h1>
-        <form id="accessForm" class="contact-form" novalidate>
+        <form id="accessForm" class="contact-form" data-request-type="2" novalidate>
             <div class="form-group">
                 <label for="notice">Извещаем о предстоящем (переводе работника в другое структурное подразделение/назначении на новую должность/переводе на другую работу для замещения временно отсутствующего работника):</label>
                 <textarea type="text" id="notice" name="notice"></textarea>
@@ -40,8 +40,8 @@
             </div>
 
             <div class="form-group">
-                <label for="date-of-employment">Дата наступления кадрового события</label>
-                <input type="date" id="date-of-employment" name="date-of-employment" required>
+                <label for="date">Дата наступления кадрового события</label>
+                <input type="date" id="date" name="date" required>
             </div>
 
             <div class="form-group">
@@ -53,7 +53,7 @@
         </form>
     </div>
 
-    <script>
+    <!-- <script>
         let lastFormData = null;
         document.getElementById('accessForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -84,7 +84,8 @@
             
             try {
                 console.log('Отправляемые данные:', formData);
-                const response = await fetch('/api/AccessRequest', {
+                formData['requestTypeId'] = 2;
+                const response = await fetch('/api/Request', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -189,13 +190,13 @@
                             // Добавляем нужные поля из lastFormData
                             if (lastFormData['name']) uploadFormData.append('fullName', lastFormData['name']);
                             if (lastFormData['position']) uploadFormData.append('position', lastFormData['position']);
-                            if (lastFormData['date-of-employment']) uploadFormData.append('employmentDate', lastFormData['date-of-employment']);
+                            if (lastFormData['date']) uploadFormData.append('date', lastFormData['date']);
                             uploadFormData.append('requestTypeId', '1'); // если всегда "Заявка на предоставление доступа"
                             // Можно добавить и другие поля, если потребуется
                             downloadBtn.disabled = true;
                             downloadBtn.textContent = 'Загрузка...';
                             try {
-                                const resp = await fetch('/api/AccessRequest/UploadWithForm', {
+                                const resp = await fetch('/api/Request/UploadWithForm', {
                                     method: 'POST',
                                     body: uploadFormData
                                 });
@@ -246,6 +247,7 @@
                 alert('Произошла ошибка при отправке формы. Проверьте консоль для деталей.');
             }
         });
-    </script>
+    </script> -->
+    <script src="/js/form-handler.js"></script>
 </body>
 </html>

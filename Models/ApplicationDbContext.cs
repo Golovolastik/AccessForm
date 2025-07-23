@@ -10,7 +10,8 @@ public class ApplicationDbContext : DbContext
     }
     
     public DbSet<RequestType> RequestTypes { get; set; }
-    public DbSet<AccessRequest> AccessRequests { get; set; }
+    public DbSet<Request> AccessRequests { get; set; }
+    public DbSet<NoticeOfTransferRequest> NoticeOfTransferRequests { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

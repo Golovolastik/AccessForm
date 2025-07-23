@@ -11,5 +11,5 @@ public class RequestType
     [MaxLength(100)]
     public string Name { get; set; } = string.Empty;
     
-    public ICollection<AccessRequest> AccessRequests { get; set; } = new List<AccessRequest>();
+    public ICollection<Request> AccessRequests { get; set; } = new List<Request>();
 } 

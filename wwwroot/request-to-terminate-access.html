@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h1>Заявка на прекращение доступа</h1>
-        <form id="accessForm" class="contact-form" novalidate>
+        <form id="accessForm" class="contact-form" data-request-type="3" novalidate>
             <div class="form-group">
                 <label for="name">Фамилия, собственное имя, отчество (если таковое имеется)</label>
                 <input type="text" id="name" name="name" required>
@@ -57,7 +57,7 @@
         </form>
     </div>
 
-    <script>
+    <!-- <script>
         let lastFormData = null;
         document.getElementById('accessForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -88,7 +88,8 @@
             
             try {
                 console.log('Отправляемые данные:', formData);
-                const response = await fetch('/api/AccessRequest', {
+                formData['requestTypeId'] = 3;
+                const response = await fetch('/api/Request', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -193,13 +194,13 @@
                             // Добавляем нужные поля из lastFormData
                             if (lastFormData['name']) uploadFormData.append('fullName', lastFormData['name']);
                             if (lastFormData['position']) uploadFormData.append('position', lastFormData['position']);
-                            if (lastFormData['date-of-employment']) uploadFormData.append('employmentDate', lastFormData['date-of-employment']);
-                            uploadFormData.append('requestTypeId', '1'); // если всегда "Заявка на предоставление доступа"
-                            // Можно добавить и другие поля, если потребуется
+                            if (lastFormData['requestTypeId']) uploadFormData.append('requestTypeId', lastFormData['requestTypeId']);
+                            // uploadFormData.append('requestTypeId', '1'); // если всегда "Заявка на предоставление доступа"
+                            // // Можно добавить и другие поля, если потребуется
                             downloadBtn.disabled = true;
                             downloadBtn.textContent = 'Загрузка...';
                             try {
-                                const resp = await fetch('/api/AccessRequest/UploadWithForm', {
+                                const resp = await fetch('/api/Request/UploadWithForm', {
                                     method: 'POST',
                                     body: uploadFormData
                                 });
@@ -250,6 +251,7 @@
                 alert('Произошла ошибка при отправке формы. Проверьте консоль для деталей.');
             }
         });
-    </script>
+    </script> -->
+    <script src="/js/form-handler.js"></script>
 </body>
 </html>

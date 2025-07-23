@@ -58,7 +58,6 @@ namespace AccessForm.Services
                                     {
                                         foreach (var text in run.Elements<Text>())
                                         {
-                                            // Проверяем, содержит ли текст один из ключей замены
                                             foreach (var replacement in replacements)
                                             {
                                                 if (text.Text.Contains(replacement.Key))
@@ -67,6 +66,24 @@ namespace AccessForm.Services
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Теперь заменяем во всех параграфах вне таблиц
+                    foreach (var paragraph in body.Elements<Paragraph>())
+                    {
+                        foreach (var run in paragraph.Elements<Run>())
+                        {
+                            foreach (var text in run.Elements<Text>())
+                            {
+                                foreach (var replacement in replacements)
+                                {
+                                    if (text.Text.Contains(replacement.Key))
+                                    {
+                                        text.Text = text.Text.Replace(replacement.Key, replacement.Value);
                                     }
                                 }
                             }

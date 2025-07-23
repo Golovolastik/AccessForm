@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h1>Заявка на предоставление доступа</h1>
-        <form id="accessForm" class="contact-form" novalidate>
+        <form id="accessForm" class="contact-form" data-request-type="1" novalidate>
             <div class="form-group">
                 <label for="name">Фамилия, собственное имя, отчество (если таковое имеется)</label>
                 <input type="text" id="name" name="name" required>
@@ -213,7 +213,7 @@
         </form>
     </div>
 
-    <script>
+    <!-- <script>
         let lastFormData = null;
         document.getElementById('accessForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -241,10 +241,11 @@
                 }
             }
             lastFormData = formData; // Сохраняем данные формы для дальнейшей отправки
+            formData['requestTypeId'] = 1;
             
             try {
                 console.log('Отправляемые данные:', formData);
-                const response = await fetch('/api/AccessRequest', {
+                const response = await fetch('/api/Request', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -355,7 +356,7 @@
                             downloadBtn.disabled = true;
                             downloadBtn.textContent = 'Загрузка...';
                             try {
-                                const resp = await fetch('/api/AccessRequest/UploadWithForm', {
+                                const resp = await fetch('/api/Request/UploadWithForm', {
                                     method: 'POST',
                                     body: uploadFormData
                                 });
@@ -406,6 +407,7 @@
                 alert('Произошла ошибка при отправке формы. Проверьте консоль для деталей.');
             }
         });
-    </script>
+    </script> -->
+    <script src="/js/form-handler.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AccessForm.Models;
 
-public class AccessRequest
+public class Request
 {
     [Key]
     public int Id { get; set; }
@@ -17,9 +17,6 @@ public class AccessRequest
     public string Position { get; set; } = string.Empty;
     
     [Required]
-    public DateTime EmploymentDate { get; set; }
-    
-    [Required]
     public string DocumentPath { get; set; } = string.Empty;
     
     [Required]
@@ -31,5 +28,5 @@ public class AccessRequest
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     [MaxLength(45)]
-    public string? IpAddress { get; set; } // IPv6 совместимость
+    public string? IpAddress { get; set; }
 } 
