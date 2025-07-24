@@ -8,6 +8,13 @@ window.addEventListener('DOMContentLoaded', function() {
 
     let lastFormData = null;
     form.addEventListener('submit', async function(e) {
+        // Проверяем валидность формы перед preventDefault
+        if (!this.checkValidity()) {
+            // Показываем ошибки, если есть
+            e.preventDefault();
+            alert("Пожалуйста, заполните все обязательные поля");
+            return;
+        }
         e.preventDefault();
         // Отключаем кнопку отправки формы
         const submitBtn = this.querySelector('.submit-btn');
