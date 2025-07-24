@@ -38,6 +38,15 @@ services:
       - 8080:8080
     networks:
       - app-network
+  
+  filebrowser:
+    image: filebrowser/filebrowser
+    ports:
+      - "8081:80"
+    volumes:
+      - uploaded_documents:/srv
+      - filebrowser_database:/database
+      - filebrowser_config:/config
 
 networks:
   app-network:
@@ -46,3 +55,5 @@ networks:
 volumes:
   postgres_data:
   uploaded_documents: 
+  filebrowser_database:
+  filebrowser_config:
