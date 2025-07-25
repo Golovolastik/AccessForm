@@ -9,6 +9,8 @@ services:
       - "${APP_PORT}:5000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
       - ConnectionStrings__DefaultConnection=Host=${DB_HOST};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
     depends_on:
       - db
@@ -16,6 +18,7 @@ services:
       - app-network
     volumes:
       - uploaded_documents:/app/UploadedDocuments
+      - ./certs:/https
     restart: unless-stopped
 
   db:
