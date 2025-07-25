@@ -16,6 +16,7 @@ services:
       - app-network
     volumes:
       - uploaded_documents:/app/UploadedDocuments
+    restart: unless-stopped
 
   db:
     image: postgres:16
