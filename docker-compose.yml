@@ -6,7 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${APP_PORT}:5000"
+      - "${APP_PORT_HTTP}:5000"
+      - "${APP_PORT_HTTPS}:5001"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetcore.pfx

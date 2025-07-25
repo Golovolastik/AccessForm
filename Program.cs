@@ -7,7 +7,7 @@ using AccessForm.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Явно указываем порт
-builder.WebHost.UseUrls("http://+:5000");
+//builder.WebHost.UseUrls("http://+:5000");
 
 // Добавляем поддержку JSON
 builder.Services.AddControllers();
@@ -71,5 +71,9 @@ app.MapGet("/", () => Results.Redirect("/index.html"));
 
 // Настраиваем маршрутизацию контроллеров
 app.MapControllers();
+
+app.Urls.Add("http://0.0.0.0:5000");
+app.Urls.Add("https://0.0.0.0:5001");
+
 
 app.Run();
